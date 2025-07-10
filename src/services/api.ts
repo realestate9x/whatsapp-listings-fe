@@ -1,6 +1,6 @@
-import { toast } from "sonner";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { supabase } from "@/integrations/supabase/client";
+import axios from "axios";
+import { toast } from "sonner";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -80,59 +80,8 @@ publicAxiosInstance.interceptors.response.use(
   }
 );
 
-// Generic API request function
-const apiRequest = async <T>(
-  endpoint: string,
-  config: AxiosRequestConfig = {}
-): Promise<T> => {
-  try {
-    const response: AxiosResponse<T> = await axiosInstance({
-      url: endpoint,
-      ...config,
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`API request failed for ${endpoint}:`, error);
-    throw error;
-  }
-};
-
-// API service methods
-export const apiService = {
-  // GET request
-  get: async <T>(endpoint: string): Promise<T> => {
-    return apiRequest<T>(endpoint, { method: "GET" });
-  },
-
-  // POST request
-  post: async <T, D = unknown>(endpoint: string, data?: D): Promise<T> => {
-    return apiRequest<T>(endpoint, {
-      method: "POST",
-      data,
-    });
-  },
-
-  // PUT request
-  put: async <T, D = unknown>(endpoint: string, data?: D): Promise<T> => {
-    return apiRequest<T>(endpoint, {
-      method: "PUT",
-      data,
-    });
-  },
-
-  // DELETE request
-  delete: async <T>(endpoint: string): Promise<T> => {
-    return apiRequest<T>(endpoint, { method: "DELETE" });
-  },
-
-  // PATCH request
-  patch: async <T, D = unknown>(endpoint: string, data?: D): Promise<T> => {
-    return apiRequest<T>(endpoint, {
-      method: "PATCH",
-      data,
-    });
-  },
-};
+// Export axios instances directly for use
+export { axiosInstance };
 
 // Utility function to check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {
