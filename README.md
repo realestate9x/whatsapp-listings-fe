@@ -1,73 +1,131 @@
-# Welcome to your Lovable project
+# Real Estate Frontend Application
 
-## Project info
+A modern, responsive real estate web application built with React, TypeScript, and Supabase for property management and discovery.
 
-**URL**: https://lovable.dev/projects/7aaf8c73-f27a-4372-8efe-4010ab2551ab
+## Features
 
-## How can I edit this code?
+- 🏠 **Property Management**: Browse and manage real estate listings
+- 🔐 **Authentication**: Secure user authentication with Supabase
+- 📱 **Responsive Design**: Mobile-first design with Tailwind CSS
+- 🎨 **Modern UI**: Beautiful interface using shadcn/ui components
+- ⚡ **Fast Performance**: Built with Vite for optimal development and build performance
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7aaf8c73-f27a-4372-8efe-4010ab2551ab) and start prompting.
+- Node.js (v18 or higher)
+- npm or pnpm package manager
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. Clone the repository:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+cd realestate-fe
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+# or
+pnpm install
+```
 
-**Use GitHub Codespaces**
+3. Set up environment variables:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+cp .env.example .env
+```
 
-## What technologies are used for this project?
+Update the `.env` file with your Supabase credentials:
 
-This project is built with:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+4. Start the development server:
 
-## How can I deploy this project?
+```bash
+npm run dev
+# or
+pnpm dev
+```
 
-Simply open [Lovable](https://lovable.dev/projects/7aaf8c73-f27a-4372-8efe-4010ab2551ab) and click on Share -> Publish.
+The application will be available at `http://localhost:5173`
 
-## Can I connect a custom domain to my Lovable project?
+## Available Scripts
 
-Yes, you can!
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build for development
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Tech Stack
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is built with modern technologies:
+
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and optimized builds
+- **UI Components**: shadcn/ui with Radix UI primitives
+- **Styling**: Tailwind CSS for utility-first styling
+- **Backend**: Supabase for authentication and database
+- **State Management**: React Context API
+- **Routing**: React Router for navigation
+- **Form Handling**: React Hook Form with Zod validation
+
+## Project Structure
+
+```text
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── Header.tsx      # Navigation header
+│   ├── Layout.tsx      # Main layout wrapper
+│   └── AppSidebar.tsx  # Application sidebar
+├── contexts/           # React context providers
+│   └── AuthContext.tsx # Authentication context
+├── hooks/              # Custom React hooks
+├── integrations/       # Third-party integrations
+│   └── supabase/       # Supabase configuration
+├── lib/                # Utility functions
+├── pages/              # Page components
+│   ├── Auth.tsx        # Authentication page
+│   ├── Dashboard.tsx   # Main dashboard
+│   └── NotFound.tsx    # 404 error page
+└── services/           # API service functions
+```
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
+
+## Deployment
+
+The application can be deployed to various platforms:
+
+- **Vercel**: `vercel --prod`
+- **Netlify**: Connect your Git repository
+- **Supabase**: Use Supabase hosting
+- **GitHub Pages**: Configure GitHub Actions
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit your changes: `git commit -m 'Add new feature'`
+4. Push to the branch: `git push origin feature/new-feature`
+5. Open a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
