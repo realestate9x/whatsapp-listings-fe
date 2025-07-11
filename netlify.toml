@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  base = "realestate9x/whatsapp-listings-fe"
+  base = ""
 
 [context.production.environment]
   VITE_SUPABASE_URL = "https://rjwdrbwgjkomwfciimue.supabase.co"
