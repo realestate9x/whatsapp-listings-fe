@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  base = "realestate9x/whatsapp-listings-fe"
+
+[context.production.environment]
+  VITE_SUPABASE_URL = "https://rjwdrbwgjkomwfciimue.supabase.co"
+  VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqd2RyYndnamtvbXdmY2lpbXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNDYxNzMsImV4cCI6MjA2NzYyMjE3M30.zFVG9lG9DUct9Fu0Vuu1KgOWEkvbXxk9rSy0VeFyPcE"
+  VITE_API_URL= "https://whatsapp-listings.onrender.com"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 
