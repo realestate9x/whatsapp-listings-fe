@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { whatsappService, WhatsAppStatus } from "@/services/whatsapp-service";
+import {
+  whatsappService,
+  WhatsAppStatus,
+  GroupsResponse,
+  GroupPreference,
+} from "@/services/whatsapp-service";
 import { toast } from "sonner";
 
 export const useWhatsAppStatus = () => {
@@ -52,6 +57,33 @@ export const useStartWhatsApp = () => {
     onError: (error) => {
       console.error("Failed to start WhatsApp connection:", error);
       toast.error("Failed to start WhatsApp connection");
+    },
+  });
+};
+
+export const useWhatsAppGroups = () => {
+  return useQuery({
+    queryKey: ["whatsapp-groups"],
+    queryFn: whatsappService.getGroups,
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+  });
+};
+
+export const useUpdateGroupPreferences = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (preferences: GroupPreference[]) =>
+      whatsappService.updateGroupPreferences(preferences),
+    onSuccess: () => {
+      // Invalidate and refetch groups data
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-groups"] });
+      toast.success("Group monitoring preferences saved successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to save group preferences:", error);
+      toast.error("Failed to save group preferences");
     },
   });
 };

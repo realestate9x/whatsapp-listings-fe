@@ -10,6 +10,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 // Pages
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Groups from "./pages/Groups";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -42,6 +43,7 @@ const App = () => (
               }
             >
               <Route index element={<Dashboard />} />
+              <Route path="groups" element={<Groups />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
