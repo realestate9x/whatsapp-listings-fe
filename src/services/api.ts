@@ -102,6 +102,28 @@ export const fetchProperties = async (
   return response.data;
 };
 
+// Export properties to CSV (backend handles CSV generation)
+export const exportPropertiesToCSV = async (
+  filters: Omit<PropertyFilters, "limit"> = {}
+): Promise<Blob> => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value.toString());
+    }
+  });
+
+  const response = await axiosInstance.get(
+    `/parsing-job/properties/export/csv?${params.toString()}`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  return response.data;
+};
+
 // Utility function to check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {
   try {
