@@ -72,7 +72,6 @@ const Auth = () => {
         }
 
         if (data.user) {
-          toast.success("Logged in successfully!");
           navigate("/dashboard");
         }
       } else {
