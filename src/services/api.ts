@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import axios from "axios";
 import { toast } from "sonner";
+import type { PropertyFilters, PropertyResponse } from "@/types/property";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -82,6 +83,24 @@ publicAxiosInstance.interceptors.response.use(
 
 // Export axios instances directly for use
 export { axiosInstance };
+
+// Property API functions
+export const fetchProperties = async (
+  filters: PropertyFilters = {}
+): Promise<PropertyResponse> => {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      params.append(key, value.toString());
+    }
+  });
+
+  const response = await axiosInstance.get(
+    `/parsing-job/properties?${params.toString()}`
+  );
+  return response.data;
+};
 
 // Utility function to check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {

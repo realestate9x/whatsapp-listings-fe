@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, Users, Building } from "lucide-react";
 
 import {
   Sidebar,
@@ -27,6 +27,12 @@ const navigationItems = [
     title: "Groups",
     url: "/dashboard/groups",
     icon: Users,
+    group: "main",
+  },
+  {
+    title: "Properties",
+    url: "/dashboard/properties",
+    icon: Building,
     group: "main",
   },
 ];
