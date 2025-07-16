@@ -35,6 +35,7 @@ export interface PropertyFilters {
   bedrooms?: number;
   min_parking_count?: number;
   min_confidence?: number;
+  floor_number?: number;
   limit?: number;
 }
 

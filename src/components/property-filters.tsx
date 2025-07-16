@@ -71,6 +71,7 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
       min_price: undefined,
       max_price: undefined,
       bedrooms: undefined,
+      floor_number: undefined,
       min_parking_count: undefined,
       min_confidence: undefined,
     };
@@ -106,6 +107,23 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Location */}
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="location"
+                placeholder="Search location..."
+                value={filters.location || ""}
+                onChange={(e) =>
+                  handleFilterChange("location", e.target.value || undefined)
+                }
+                className="pl-8"
+              />
+            </div>
+          </div>
+
           {/* Listing Type */}
           <div className="space-y-2">
             <Label htmlFor="listing-type">Listing Type</Label>
@@ -157,23 +175,6 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
             </Select>
           </div>
 
-          {/* Location */}
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="location"
-                placeholder="Search location..."
-                value={filters.location || ""}
-                onChange={(e) =>
-                  handleFilterChange("location", e.target.value || undefined)
-                }
-                className="pl-8"
-              />
-            </div>
-          </div>
-
           {/* Bedrooms */}
           <div className="space-y-2">
             <Label htmlFor="bedrooms">Bedrooms</Label>
@@ -198,6 +199,23 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
                 <SelectItem value="5">5+ BHK</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Floor Number */}
+          <div className="space-y-2">
+            <Label htmlFor="floor-number">Floor Number</Label>
+            <Input
+              id="floor-number"
+              type="number"
+              placeholder="Any floor"
+              value={filters.floor_number || ""}
+              onChange={(e) =>
+                handleFilterChange(
+                  "floor_number",
+                  e.target.value ? parseInt(e.target.value) : undefined
+                )
+              }
+            />
           </div>
 
           {/* Min Price */}

@@ -140,6 +140,8 @@ export const columns: ColumnDef<Property>[] = [
       const areaSqft = row.original.area_sqft;
       const parkingCount = row.original.parking_count;
       const parking = row.original.parking;
+      const floorNumber = row.original.floor_number;
+      const totalFloors = row.original.total_floors;
 
       return (
         <div className="flex flex-wrap gap-2">
@@ -157,6 +159,12 @@ export const columns: ColumnDef<Property>[] = [
           )}
           {areaSqft && (
             <div className="text-sm">{areaSqft.toLocaleString()} sq ft</div>
+          )}
+          {floorNumber !== undefined && floorNumber !== null && (
+            <div className="text-sm">
+              Floor {floorNumber === 0 ? "G" : floorNumber}
+              {totalFloors && `/${totalFloors}`}
+            </div>
           )}
           {(parkingCount || parking) && (
             <div className="flex items-center gap-1 text-sm">
