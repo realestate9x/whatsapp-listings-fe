@@ -24,7 +24,15 @@ export const useMyWhatsAppStatus = () => {
   return useQuery({
     queryKey: ["my-whatsapp-status"],
     queryFn: whatsappService.getMyStatus,
-    refetchInterval: 5000, // Poll every 5 seconds to check for status changes
+    refetchInterval: (query) => {
+      // More frequent polling when not connected or QR is pending
+      const data = query.state.data;
+      if (!data?.isConnected || data?.qrCode) {
+        return 5000; // 5 seconds
+      }
+      // Less frequent polling when connected
+      return 30000; // 30 seconds
+    },
     retry: (failureCount, error) => {
       // Don't retry if it's a network error, but retry for other errors
       if (failureCount < 3) return true;
@@ -51,12 +59,32 @@ export const useStartWhatsApp = () => {
           data.message || "QR code generated. Please scan with WhatsApp."
         );
       } else if (data.status === "connecting") {
-        toast.info("Connection started. Generating QR code...");
+        toast.info("Attempting to restore connection...");
       }
     },
     onError: (error) => {
       console.error("Failed to start WhatsApp connection:", error);
       toast.error("Failed to start WhatsApp connection");
+    },
+  });
+};
+
+export const useForceLogout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: whatsappService.forceLogout,
+    onSuccess: (data) => {
+      // Invalidate all WhatsApp related queries
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-status"] });
+      queryClient.invalidateQueries({ queryKey: ["my-whatsapp-status"] });
+      queryClient.invalidateQueries({ queryKey: ["whatsapp-groups"] });
+
+      toast.success("WhatsApp logout and cleanup completed successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to force logout:", error);
+      toast.error("Failed to force logout");
     },
   });
 };

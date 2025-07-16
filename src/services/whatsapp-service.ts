@@ -100,6 +100,20 @@ export const whatsappService = {
     }
   },
 
+  // Force logout and cleanup auth data (auth required)
+  forceLogout: async (): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await axiosInstance.post<{
+        success: boolean;
+        message: string;
+      }>("/whatsapp/force-logout");
+      return response.data;
+    } catch (error) {
+      console.error("Error forcing WhatsApp logout:", error);
+      throw error;
+    }
+  },
+
   // Get user's WhatsApp groups and preferences (auth required)
   getGroups: async (): Promise<GroupsResponse> => {
     try {

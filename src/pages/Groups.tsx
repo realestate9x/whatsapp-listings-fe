@@ -58,28 +58,37 @@ const Groups = () => {
     }
   }, [groupsError, toast]);
 
-  const handleToggleGroup = (groupId: string, enabled: boolean) => {
+  const handleToggleGroup = async (groupId: string, enabled: boolean) => {
+    // Optimistically update the UI
     setGroups((prevGroups) =>
       prevGroups.map((group) =>
         group.group_id === groupId ? { ...group, is_enabled: enabled } : group
       )
     );
-  };
 
-  const savePreferences = async () => {
+    // Auto-save the preference
     try {
-      // Only save groups that are enabled - no need to save disabled groups
-      const preferences = groups
-        .filter((group) => group.is_enabled)
-        .map((group) => ({
-          group_id: group.group_id,
-          group_name: group.group_name,
-          is_enabled: true,
-        }));
+      const updatedGroup = groups.find((g) => g.group_id === groupId);
+      if (updatedGroup) {
+        const preferences = groups
+          .map((group) => ({
+            group_id: group.group_id,
+            group_name: group.group_name,
+            is_enabled: group.group_id === groupId ? enabled : group.is_enabled,
+          }))
+          .filter((group) => group.is_enabled);
 
-      await updatePreferences.mutateAsync(preferences);
+        await updatePreferences.mutateAsync(preferences);
+      }
     } catch (error) {
-      // Error handling is done in the mutation
+      // Revert the change if save fails
+      setGroups((prevGroups) =>
+        prevGroups.map((group) =>
+          group.group_id === groupId
+            ? { ...group, is_enabled: !enabled }
+            : group
+        )
+      );
     }
   };
 
@@ -87,41 +96,37 @@ const Groups = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-8 space-y-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-semibold text-gray-900 mb-2">
-            WhatsApp Groups
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Select which WhatsApp groups you want to monitor for real estate
-            messages
-          </p>
-        </div>
-
-        {/* Connection Status */}
-        <Alert
-          className={
-            isConnected
-              ? "border-green-200 bg-green-50"
-              : "border-orange-200 bg-orange-50"
-          }
-        >
-          <div className="flex items-center gap-2">
-            {isConnected ? (
-              <Wifi className="h-4 w-4 text-green-600" />
-            ) : (
-              <WifiOff className="h-4 w-4 text-orange-600" />
-            )}
-            <AlertDescription
-              className={isConnected ? "text-green-800" : "text-orange-800"}
-            >
-              {isConnected
-                ? "WhatsApp is connected and ready"
-                : "WhatsApp is not connected. Please connect first from the Dashboard."}
-            </AlertDescription>
-          </div>
-        </Alert>
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        {/* Info Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-lg">How it works</span>
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <Wifi className="h-4 w-4 text-green-600" />
+                ) : (
+                  <WifiOff className="h-4 w-4 text-orange-600" />
+                )}
+                <span
+                  className={`text-sm ${
+                    isConnected ? "text-green-600" : "text-orange-600"
+                  }`}
+                >
+                  {isConnected ? "Connected" : "Not Connected"}
+                </span>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm text-gray-600">
+            <p>
+              • Only messages from enabled groups will be saved to the database
+            </p>
+            <p>• Changes are saved automatically when you toggle a group</p>
+            <p>• Changes take effect immediately</p>
+            <p>• Historical messages are not affected by preference changes</p>
+          </CardContent>
+        </Card>
 
         {/* Main Content */}
         <Card>
@@ -156,7 +161,7 @@ const Groups = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {groups.map((group) => (
                     <div
                       key={group.group_id}
@@ -182,49 +187,18 @@ const Groups = () => {
                       <div className="flex justify-end">
                         <Switch
                           checked={group.is_enabled}
+                          disabled={updatePreferences.isPending}
                           onCheckedChange={(enabled) =>
                             handleToggleGroup(group.group_id, enabled)
                           }
+                          className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-input"
                         />
                       </div>
                     </div>
                   ))}
                 </div>
-
-                {/* Save Button */}
-                <div className="pt-4 border-t">
-                  <Button
-                    onClick={savePreferences}
-                    disabled={updatePreferences.isPending}
-                    className="w-full"
-                  >
-                    {updatePreferences.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Preferences"
-                    )}
-                  </Button>
-                </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Info Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">How it works</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-600">
-            <p>
-              • Only messages from enabled groups will be saved to the database
-            </p>
-            <p>• You can change these settings anytime</p>
-            <p>• Changes take effect immediately after saving</p>
-            <p>• Historical messages are not affected by preference changes</p>
           </CardContent>
         </Card>
       </div>

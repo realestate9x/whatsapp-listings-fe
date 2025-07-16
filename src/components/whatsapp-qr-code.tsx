@@ -1,20 +1,13 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useStartWhatsApp, useMyWhatsAppStatus } from "@/hooks/use-whatsapp";
-import QRCode from "react-qr-code";
 import {
-  Smartphone,
-  Wifi,
-  WifiOff,
-  RefreshCw,
-  CheckCircle,
-  AlertCircle,
-  QrCode,
-} from "lucide-react";
+  useStartWhatsApp,
+  useMyWhatsAppStatus,
+  useForceLogout,
+} from "@/hooks/use-whatsapp";
+import QRCode from "react-qr-code";
+import { Smartphone, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 
 interface WhatsAppQRCodeProps {
   className?: string;
@@ -23,6 +16,23 @@ interface WhatsAppQRCodeProps {
 const WhatsAppQRCode = ({ className }: WhatsAppQRCodeProps) => {
   const { data: status, isLoading, error, refetch } = useMyWhatsAppStatus();
   const startWhatsApp = useStartWhatsApp();
+  const forceLogout = useForceLogout();
+  const [hasAttemptedAutoStart, setHasAttemptedAutoStart] = useState(false);
+
+  // Auto-start connection attempt when component mounts and no connection exists
+  useEffect(() => {
+    if (
+      !isLoading &&
+      !hasAttemptedAutoStart &&
+      status &&
+      !status.isConnected &&
+      !status.qrCode
+    ) {
+      console.log("Attempting auto-start WhatsApp connection...");
+      setHasAttemptedAutoStart(true);
+      startWhatsApp.mutate();
+    }
+  }, [isLoading, hasAttemptedAutoStart, status, startWhatsApp]);
 
   // Auto-refresh when QR code is shown or when connecting
   useEffect(() => {
@@ -42,80 +52,73 @@ const WhatsAppQRCode = ({ className }: WhatsAppQRCodeProps) => {
     startWhatsApp.mutate();
   };
 
+  // Loading state
   if (isLoading) {
     return (
       <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smartphone className="w-5 h-5" />
-            WhatsApp Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-64 w-full" />
-          <Skeleton className="h-10 w-full" />
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <RefreshCw className="w-8 h-8 mx-auto animate-spin text-blue-500" />
+            <p className="text-gray-600">Checking WhatsApp status...</p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smartphone className="w-5 h-5" />
-            WhatsApp Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Failed to check status. Try again.
-            </AlertDescription>
-          </Alert>
-          <Button
-            onClick={() => refetch()}
-            className="mt-4 w-full"
-            variant="outline"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
-          </Button>
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <AlertCircle className="w-12 h-12 mx-auto text-red-500" />
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Connection Error
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Unable to check WhatsApp status
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Button onClick={() => refetch()} className="w-full">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Try Again
+              </Button>
+              <Button
+                onClick={() => forceLogout.mutate()}
+                variant="outline"
+                className="w-full"
+                disabled={forceLogout.isPending}
+              >
+                Reset Connection
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
-  // If connected, show connected status
+  // Connected state
   if (status?.isConnected || status?.connected) {
     return (
       <Card className={className}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Smartphone className="w-5 h-5" />
-            WhatsApp Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircle className="w-8 h-8 text-green-500" />
-              <Badge
-                variant="outline"
-                className="bg-green-50 text-green-700 border-green-200"
-              >
-                <Wifi className="w-4 h-4 mr-1" />
-                Connected
-              </Badge>
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <CheckCircle className="w-12 h-12 mx-auto text-green-500" />
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                WhatsApp Connected
+              </h3>
+              <p className="text-sm text-gray-600">
+                Ready to receive property listings
+              </p>
             </div>
-            <p className="text-sm text-gray-600">WhatsApp connected!</p>
-
             <Button onClick={() => refetch()} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh Status
+              Refresh
             </Button>
           </div>
         </CardContent>
@@ -123,74 +126,76 @@ const WhatsAppQRCode = ({ className }: WhatsAppQRCodeProps) => {
     );
   }
 
-  // If QR code is available, show it
+  // QR code state
   if (status?.qrCode) {
     return (
       <Card className={className}>
-        <CardContent className="p-4 space-y-4">
-          <Alert>
-            <QrCode className="h-4 w-4" />
-            <AlertDescription>Scan with WhatsApp to connect.</AlertDescription>
-          </Alert>
+        <CardContent className="p-8 text-center">
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                Connect WhatsApp
+              </h3>
+              <p className="text-sm text-gray-600">
+                Scan this QR code with WhatsApp
+              </p>
+            </div>
 
-          <div className="flex justify-center p-4 bg-white rounded-lg border">
-            <QRCode
-              style={{ height: 300, maxWidth: "100%", width: "100%" }}
-              value={status.qrCode}
-              viewBox="0 0 256 256"
-            />
+            <div className="flex justify-center p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+              <QRCode
+                style={{ height: 200, maxWidth: "100%", width: "100%" }}
+                value={status.qrCode}
+                viewBox="0 0 256 256"
+              />
+            </div>
+
+            <div className="text-xs text-gray-500 space-y-1">
+              <p>1. Open WhatsApp on your phone</p>
+              <p>2. Tap Menu {`>`} Linked Devices</p>
+              <p>3. Tap "Link a Device" and scan this code</p>
+            </div>
+
+            <Button onClick={() => refetch()} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh QR Code
+            </Button>
           </div>
-
-          <Button
-            onClick={() => refetch()}
-            variant="outline"
-            className="w-full"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh QR Code
-          </Button>
         </CardContent>
       </Card>
     );
   }
 
-  // Default state - show start button
+  // Default state - not connected
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Smartphone className="w-5 h-5" />
-          WhatsApp Connection
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Badge
-            variant="outline"
-            className="bg-red-50 text-red-700 border-red-200"
-          >
-            <WifiOff className="w-4 h-4 mr-1" />
-            Not Connected
-          </Badge>
-        </div>
-
-        <div className="text-center space-y-4">
-          <p className="text-sm text-gray-600">Connect WhatsApp to start.</p>
+      <CardContent className="p-8 text-center">
+        <div className="space-y-6">
+          <div>
+            <Smartphone className="w-12 h-12 mx-auto text-blue-500 mb-4" />
+            <h3 className="font-semibold text-gray-900 mb-2">
+              Connect WhatsApp
+            </h3>
+            <p className="text-sm text-gray-600">
+              Connect your WhatsApp to start receiving property listings from
+              groups
+            </p>
+          </div>
 
           <Button
             onClick={handleStartConnection}
             disabled={startWhatsApp.isPending}
             className="w-full"
+            size="lg"
           >
             {startWhatsApp.isPending ? (
               <>
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                Starting Connection...
+                Connecting...
               </>
             ) : (
               <>
                 <Smartphone className="w-4 h-4 mr-2" />
-                Start WhatsApp Connection
+                Connect WhatsApp
               </>
             )}
           </Button>

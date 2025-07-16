@@ -10,20 +10,12 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-semibold text-gray-900 mb-2">
-            Welcome back, {name}
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Manage your WhatsApp connection and view your account information
-          </p>
-        </div>
-
+      <div className="max-w-7xl mx-auto p-8">
         {/* WhatsApp Connection Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <WhatsAppQRCode className="lg:col-span-1" />
+        <div className="flex justify-center items-center min-h-[80vh]">
+          <div className="w-full max-w-md">
+            <WhatsAppQRCode className="w-full" />
+          </div>
         </div>
       </div>
     </div>
