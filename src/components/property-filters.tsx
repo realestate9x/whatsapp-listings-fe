@@ -73,7 +73,6 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
       bedrooms: undefined,
       floor_number: undefined,
       min_parking_count: undefined,
-      min_confidence: undefined,
     };
     setFilters(clearedFilters);
 
@@ -272,31 +271,6 @@ export function PropertyFilters({ onFilterChange }: PropertyFiltersProps) {
                 <SelectItem value="1">1+ Space</SelectItem>
                 <SelectItem value="2">2+ Spaces</SelectItem>
                 <SelectItem value="3">3+ Spaces</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Min Confidence */}
-          <div className="space-y-2">
-            <Label htmlFor="min-confidence">Min Confidence</Label>
-            <Select
-              value={filters.min_confidence?.toString() || "any"}
-              onValueChange={(value) =>
-                handleFilterChange(
-                  "min_confidence",
-                  value === "any" ? undefined : parseFloat(value)
-                )
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Any" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any</SelectItem>
-                <SelectItem value="0.5">50%+</SelectItem>
-                <SelectItem value="0.7">70%+</SelectItem>
-                <SelectItem value="0.8">80%+</SelectItem>
-                <SelectItem value="0.9">90%+</SelectItem>
               </SelectContent>
             </Select>
           </div>
