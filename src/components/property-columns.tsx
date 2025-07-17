@@ -203,42 +203,6 @@ export const columns: ColumnDef<Property>[] = [
     },
   },
   {
-    accessorKey: "parsing_confidence",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Confidence
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const confidence = row.getValue("parsing_confidence") as number;
-
-      if (!confidence) {
-        return <span className="text-muted-foreground">N/A</span>;
-      }
-
-      const percentage = Math.round(confidence * 100);
-      let variant: "default" | "secondary" | "destructive" = "default";
-
-      if (percentage < 50) {
-        variant = "destructive";
-      } else if (percentage < 80) {
-        variant = "secondary";
-      }
-
-      return (
-        <Badge variant={variant} className="text-xs">
-          {percentage}%
-        </Badge>
-      );
-    },
-  },
-  {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
