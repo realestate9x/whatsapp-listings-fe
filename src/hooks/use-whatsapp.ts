@@ -94,7 +94,8 @@ export const useWhatsAppGroups = () => {
     queryKey: ["whatsapp-groups"],
     queryFn: whatsappService.getGroups,
     retry: 2,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    staleTime: 0, // Always consider data stale - no caching
+    gcTime: 0, // Don't keep data in cache after component unmounts
   });
 };
 
