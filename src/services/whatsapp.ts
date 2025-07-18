@@ -95,7 +95,7 @@ export const whatsappService = {
   },
 };
 
-// WhatsApp connection service (using public API without auth)
+// WhatsApp connection service (using authenticated API)
 export const whatsappConnectionService = {
   // Start WhatsApp connection
   startConnection: async (): Promise<{
@@ -104,12 +104,12 @@ export const whatsappConnectionService = {
     isConnected: boolean;
     qrCode: string | null;
   }> => {
-    const response = await publicAxiosInstance.get<{
+    const response = await axiosInstance.post<{
       status: string;
       message: string;
       isConnected: boolean;
       qrCode: string | null;
-    }>("/start-whatsapp");
+    }>("/whatsapp/connect");
     return response.data;
   },
 
@@ -123,6 +123,30 @@ export const whatsappConnectionService = {
     status: string;
     message: string;
   }> => {
+    const response = await axiosInstance.get<{
+      connected: boolean;
+      qr_pending: boolean;
+      socket_active: boolean;
+      isConnected: boolean;
+      qrCode: string | null;
+      status: string;
+      message: string;
+    }>("/whatsapp/status");
+    return response.data;
+  },
+
+  // Check public connection status (no auth)
+  getPublicStatus: async (): Promise<{
+    connected: boolean;
+    qr_pending: boolean;
+    socket_active: boolean;
+    isConnected: boolean;
+    qrCode: string | null;
+    status: string;
+    message: string;
+    active_connections: number;
+    total_services: number;
+  }> => {
     const response = await publicAxiosInstance.get<{
       connected: boolean;
       qr_pending: boolean;
@@ -131,7 +155,9 @@ export const whatsappConnectionService = {
       qrCode: string | null;
       status: string;
       message: string;
-    }>("/status");
+      active_connections: number;
+      total_services: number;
+    }>("/api/whatsapp/public-status");
     return response.data;
   },
 };

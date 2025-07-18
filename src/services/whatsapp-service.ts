@@ -34,7 +34,9 @@ export const whatsappService = {
   // Get public WhatsApp system status (no auth required)
   getStatus: async (): Promise<WhatsAppStatus> => {
     try {
-      const response = await publicAxiosInstance.get<WhatsAppStatus>("/status");
+      const response = await publicAxiosInstance.get<WhatsAppStatus>(
+        "/api/whatsapp/public-status"
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching WhatsApp status:", error);
@@ -45,17 +47,8 @@ export const whatsappService = {
   // Get user-specific WhatsApp status (auth required)
   getMyStatus: async (): Promise<WhatsAppStatus> => {
     try {
-      // Use publicAxiosInstance with manual auth for non-/api endpoints
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const response = await publicAxiosInstance.get<WhatsAppStatus>(
-        "/my-whatsapp-status",
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+      const response = await axiosInstance.get<WhatsAppStatus>(
+        "/whatsapp/status"
       );
       return response.data;
     } catch (error) {
@@ -67,17 +60,8 @@ export const whatsappService = {
   // Start WhatsApp connection for the current user (auth required)
   startConnection: async (): Promise<WhatsAppStatus> => {
     try {
-      // Note: /start-whatsapp is a direct route, not under /api
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const response = await publicAxiosInstance.get<WhatsAppStatus>(
-        "/start-whatsapp",
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
+      const response = await axiosInstance.post<WhatsAppStatus>(
+        "/whatsapp/connect"
       );
       return response.data;
     } catch (error) {
